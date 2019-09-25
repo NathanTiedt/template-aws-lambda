@@ -1,0 +1,39 @@
+{
+  "name": "template-aws-lambda",
+  "version": "1.0.0",
+  "description": "template for node lmabda projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NathanTiedt/template-aws-lambda.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NathanTiedt/template-aws-lambda/issues"
+  },
+  "homepage": "https://github.com/NathanTiedt/template-aws-lambda#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.33",
+    "@types/chai": "^4.2.3",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.7",
+    "@types/sinon": "^7.0.13",
+    "aws-sdk": "^2.517.0",
+    "chai": "^4.2.0",
+    "gulp": "^4.0.2",
+    "mocha": "^6.2.0",
+    "nyc": "^14.1.1",
+    "sinon": "^7.5.0",
+    "ts-node": "^8.4.1",
+    "ts-sinon": "^1.0.24",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
+  },
+  "dependencies": {
+    "loglevel": "^1.6.3"
+  }
+}

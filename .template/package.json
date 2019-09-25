@@ -1,0 +1,17 @@
+{
+  "name": "lambda_function_name",
+  "version": "0.0.1",
+  "description": "lambda_function_description",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "loglevel": "^1.6.4"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.535.0"
+  }
+}
