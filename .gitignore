@@ -4,3 +4,6 @@
 # vim
 *.swp
 *.swo
+
+# build
+**/build/**
