@@ -1,8 +1,10 @@
 'use-strict';
 
-export default class DefaultController {
+import { Context } from 'aws-lambda';
+
+export abstract class DefaultController {
   
   constructor () {}
 
-  public handleEvent(event: any, context: Context);
+  public abstract handleEvent(event: any, context: Context);
 }

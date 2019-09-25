@@ -4,7 +4,7 @@ const fs = require('fs');
 const install = require('gulp-install');
 const program = require('commander');
 const replace = require('gulp-replace');
-const tsProject = require('gulp-typescript');
+const ts = require('gulp-typescript');
 
 const NO_NAME = 'NONE';
 
@@ -22,8 +22,9 @@ function startLambdaFunction() {
 }
 
 function packageFunction(lambda) {
+  const tsProject = ts.createProject(`./${lambda}/tsconfig.json`);
   return Promise.resolve(
-    src(`./${lambda}/`)
+    src(`./${lambda}/index.ts`)
       .pipe(tsProject())
       .pipe(dest(`./build/${lambda}`))
   );
