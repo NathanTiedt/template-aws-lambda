@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "../build/lambda_function_name",
+    "outDir": "../build/",
     "target": "es2017",
     "lib": ["es2017"],
     "moduleResolution": "node",
@@ -13,7 +13,8 @@
   "references": [
     { "path": "../shared" }
   ],
-  "files": [
-    "index.ts"
+  "include": [
+    ".",
+    "../shared"
   ]
 }

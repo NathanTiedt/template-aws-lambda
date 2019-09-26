@@ -3,6 +3,8 @@
 import { Context } from 'aws-lambda';
 
 export abstract class DefaultController {
+
+  public haha: string = 'damn';
   
   constructor () {}
 

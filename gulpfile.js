@@ -1,5 +1,6 @@
-const { src, dest, parallel } = require('gulp');
+const { src, dest, series } = require('gulp');
 const { join, resolve } = require('path');
+const clean = require('gulp-clean');
 const fs = require('fs');
 const install = require('gulp-install');
 const program = require('commander');
@@ -7,6 +8,11 @@ const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
 
 const NO_NAME = 'NONE';
+
+function cleanBuild() {
+  return src('./build/**/*', {read: false})
+    .pipe(clean());
+}
 
 function startLambdaFunction() {
   program
@@ -24,7 +30,7 @@ function startLambdaFunction() {
 function packageFunction(lambda) {
   const tsProject = ts.createProject(`./${lambda}/tsconfig.json`);
   return Promise.resolve(
-    src(`./${lambda}/index.ts`)
+    tsProject.src()
       .pipe(tsProject())
       .pipe(dest(`./build/${lambda}`))
   );
@@ -45,4 +51,4 @@ function packageLambdas(done) {
 }
 
 exports.create = startLambdaFunction;
-exports.package = packageLambdas;
+exports.package = series(cleanBuild, packageLambdas);

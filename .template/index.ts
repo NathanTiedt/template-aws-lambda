@@ -5,7 +5,7 @@ import { DefaultController } from '../shared/controllers';
 class Control extends DefaultController {
 
   public handleEvent() {
-    console.log('handling');
+    console.log(`${this.haha}`);
   }
 
 }
