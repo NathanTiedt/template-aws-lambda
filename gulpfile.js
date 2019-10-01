@@ -3,6 +3,7 @@ const { join, resolve } = require('path');
 const clean = require('gulp-clean');
 const fs = require('fs');
 const install = require('gulp-install');
+const mergeStream = require('merge-stream');
 const program = require('commander');
 const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
@@ -50,16 +51,14 @@ function installNodeDev() {
 }
 
 function installNodeProduction() {
-  return Promise.all(
+  let merge = mergeStream();
     findLambdas()
       .map( (lambda) => {
-        return Promise.resolve(
-          src(`./${lambda}/package.json`)
+          merge.add(src(`./${lambda}/package.json`)
             .pipe(dest(`${BUILD_DIR}/${lambda}`))
-            .pipe(install({npm: `--production --save false`}))
-        );
+            .pipe(install({npm: `--production --save false`})))
       })
-  );
+  return merge;
 }
 
 function startLambdaFunction() {
