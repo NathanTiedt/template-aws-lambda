@@ -9,12 +9,17 @@ const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
 const zip = require('gulp-zip');
 
+const ARTIFACTS = `./artifacts`;
 const BUILD_DIR = `./build`;
 const NO_NAME = 'NONE';
 
 function cleanBuild() {
-  return src('./build/*', {read: false})
-    .pipe(clean());
+  return mergeStream(
+    src(`${BUILD_DIR}/*`, {read: false})
+      .pipe(clean()),
+    src(`${ARTIFACTS}/*`, {read: false})
+      .pipe(clean())
+  );
 }
 
 function cleanPackageJsons() {
@@ -100,7 +105,7 @@ function zipLambdas() {
         return Promise.resolve(
           src(`${BUILD_DIR}/${lambda}/*`)
             .pipe(zip(`${lambda}.zip`))
-            .pipe(dest(`artifacts`))
+            .pipe(dest(`${ARTIFACTS}`))
         )
       })
   );
