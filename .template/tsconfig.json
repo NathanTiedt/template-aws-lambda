@@ -13,6 +13,9 @@
   "references": [
     { "path": "../shared" }
   ],
+  "files": [
+    "./index.ts"
+  ],
   "include": [
     ".",
     "../shared"

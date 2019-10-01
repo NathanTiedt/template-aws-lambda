@@ -28,7 +28,8 @@ function cleanPackageJsons() {
       .map( (lambda) => {
         return Promise.resolve(
           src([`${BUILD_DIR}/${lambda}/package.json`,
-              `${BUILD_DIR}/${lambda}/package-lock.json`])
+              `${BUILD_DIR}/${lambda}/package-lock.json`], 
+              {allowEmpty: true})
             .pipe(clean())
         )
       })
@@ -57,12 +58,12 @@ function installNodeDev() {
 
 function installNodeProduction() {
   let merge = mergeStream();
-    findLambdas()
-      .map( (lambda) => {
-          merge.add(src(`./${lambda}/package.json`)
-            .pipe(dest(`${BUILD_DIR}/${lambda}`))
-            .pipe(install({npm: `--production --save false`})))
-      })
+  findLambdas()
+    .map( (lambda) => {
+        merge.add(src(`./${lambda}/package.json`)
+          .pipe(dest(`${BUILD_DIR}/${lambda}`))
+          .pipe(install({npm: `--production --save false`})))
+    })
   return merge;
 }
 

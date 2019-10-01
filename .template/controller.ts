@@ -1,8 +1,8 @@
 
-import DefaultController from '../shared/controllers/default.controller';
+import BaseController from '../shared/controllers/base.controller';
 import { Context } from 'aws-lambda';
 
-export default class Control extends DefaultController {
+export default class Control extends BaseController {
   
   public handleEvent = (event: any, context: Context) => {
 
