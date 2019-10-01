@@ -6,6 +6,7 @@ const install = require('gulp-install');
 const program = require('commander');
 const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
+const zip = require('gulp-zip');
 
 const BUILD_DIR = `./build`;
 const NO_NAME = 'NONE';
@@ -93,10 +94,24 @@ function typescriptLambdas(done) {
   return lambdas;
 }
 
+function zipLambdas() {
+  return Promise.all(
+    findLambdas()
+      .map( (lambda) => {
+        return Promise.resolve(
+          src(`${BUILD_DIR}/${lambda}/*`)
+            .pipe(zip(`${lambda}.zip`))
+            .pipe(dest(`artifacts`))
+        )
+      })
+  );
+}
+
 exports.create = startLambdaFunction;
 exports.install = installNodeDev;
 exports.package = series(
   cleanBuild, 
   typescriptLambdas, 
-  installNodeProduction
+  installNodeProduction,
+  zipLambdas
 );
