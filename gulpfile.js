@@ -7,11 +7,58 @@ const program = require('commander');
 const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
 
+const BUILD_DIR = `./build`;
 const NO_NAME = 'NONE';
 
 function cleanBuild() {
-  return src('./build/**/*', {read: false})
+  return src('./build/*', {read: false})
     .pipe(clean());
+}
+
+function cleanPackageJsons() {
+  return Promise.all(
+    findLambdas()
+      .map( (lambda) => {
+        return Promise.resolve(
+          src([`${BUILD_DIR}/${lambda}/package.json`,
+              `${BUILD_DIR}/${lambda}/package-lock.json`])
+            .pipe(clean())
+        )
+      })
+  );
+}
+
+function findLambdas() {
+  return fs.readdirSync('./')
+    .filter( (dir) => {
+      return dir !== '.template'
+          && fs.existsSync(join(dir, 'package.json'));
+    });
+}
+
+function installNodeDev() {
+  src(`./package.json`)
+    .pipe(install());
+  return Promise.all(
+    findLambdas()
+      .map( (lambda) => {
+        src(`./${lambda}/package.json`)
+          .pipe(install())
+      })
+  )
+}
+
+function installNodeProduction() {
+  return Promise.all(
+    findLambdas()
+      .map( (lambda) => {
+        return Promise.resolve(
+          src(`./${lambda}/package.json`)
+            .pipe(dest(`${BUILD_DIR}/${lambda}`))
+            .pipe(install({npm: `--production`}))
+        );
+      })
+  );
 }
 
 function startLambdaFunction() {
@@ -27,28 +74,29 @@ function startLambdaFunction() {
     .pipe(dest(`./${program.name}/`));
 }
 
-function packageFunction(lambda) {
+function typescriptFunction(lambda) {
   const tsProject = ts.createProject(`./${lambda}/tsconfig.json`);
   return Promise.resolve(
     tsProject.src()
       .pipe(tsProject())
-      .pipe(dest(`./build/${lambda}`))
+      .pipe(dest(`${BUILD_DIR}/${lambda}`))
   );
 }
 
-function packageLambdas(done) {
+function typescriptLambdas(done) {
   let lambdas = Promise.all(
-    fs.readdirSync('./')
-      .filter( (dir) => {
-        return dir !== '.template'
-            && fs.existsSync(join(dir, 'package.json'));
-      })
+    findLambdas()
       .map( (lambda) => {
-        return packageFunction(lambda);
+        return typescriptFunction(lambda);
       })
   );
   return lambdas;
 }
 
 exports.create = startLambdaFunction;
-exports.package = series(cleanBuild, packageLambdas);
+exports.install = installNodeDev;
+exports.package = series(
+  cleanBuild, 
+  typescriptLambdas, 
+  installNodeProduction
+);
