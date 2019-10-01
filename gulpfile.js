@@ -55,7 +55,7 @@ function installNodeProduction() {
         return Promise.resolve(
           src(`./${lambda}/package.json`)
             .pipe(dest(`${BUILD_DIR}/${lambda}`))
-            .pipe(install({npm: `--production`}))
+            .pipe(install({npm: `--production --save false`}))
         );
       })
   );
