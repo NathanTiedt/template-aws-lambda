@@ -1,13 +1,6 @@
-'use strict';
 
-import { DefaultController } from '../shared/controllers';
+import Control from './controller';
 
-class Control extends DefaultController {
+const control: Control = new Control();
 
-  public handleEvent() {
-    console.log(`${this.haha}`);
-  }
-
-}
-
-export default handler;
+export const handler = control.handleEvent;
