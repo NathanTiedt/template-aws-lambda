@@ -10,14 +10,9 @@
     "isolatedModules": true,
     "esModuleInterop": true
   }, 
-  "references": [
-    { "path": "../shared" }
-  ],
   "files": [
-    "./index.ts"
-  ],
-  "include": [
-    ".",
-    "../shared"
+    "./index.ts",
+    "./controller.ts",
+    "../shared/controllers/base.controller.ts"
   ]
 }

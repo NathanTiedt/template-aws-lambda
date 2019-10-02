@@ -23,17 +23,17 @@ function cleanBuild() {
 }
 
 function cleanPackageJsons() {
-  return Promise.all(
-    findLambdas()
-      .map( (lambda) => {
-        return Promise.resolve(
-          src([`${BUILD_DIR}/${lambda}/package.json`,
-              `${BUILD_DIR}/${lambda}/package-lock.json`], 
-              {allowEmpty: true})
-            .pipe(clean())
-        )
-      })
-  );
+  let merge = mergeStream();
+  findLambdas()
+    .map( (lambda) => {
+      merge.add(
+        src([`${BUILD_DIR}/${lambda}/package.json`,
+            `${BUILD_DIR}/${lambda}/package-lock.json`], 
+            {allowEmpty: true})
+          .pipe(clean())
+      );
+    })
+  return merge;
 }
 
 function findLambdas() {
@@ -102,16 +102,16 @@ function typescriptLambdas(done) {
 }
 
 function zipLambdas() {
-  return Promise.all(
-    findLambdas()
-      .map( (lambda) => {
-        return Promise.resolve(
-          src(`${BUILD_DIR}/${lambda}/*`)
-            .pipe(zip(`${lambda}.zip`))
-            .pipe(dest(`${ARTIFACTS}`))
-        )
-      })
-  );
+  let merge = mergeStream();
+  findLambdas()
+    .map( (lambda) => {
+      merge.add(
+        src(`${BUILD_DIR}/${lambda}/*`)
+          .pipe(zip(`${lambda}.zip`))
+          .pipe(dest(`${ARTIFACTS}`))
+      );
+    })
+  return merge;
 }
 
 exports.create = startLambdaFunction;

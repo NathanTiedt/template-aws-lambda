@@ -4,7 +4,7 @@ import { Context } from 'aws-lambda';
 
 export default class Control extends BaseController {
   
-  public handleEvent = (event: any, context: Context) => {
+  public handleEvent = (event: any, context: Context): any => {
 
   }
 
