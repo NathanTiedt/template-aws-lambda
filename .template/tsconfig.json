@@ -12,7 +12,9 @@
   }, 
   "files": [
     "./index.ts",
-    "./controller.ts",
-    "../shared/controllers/base.controller.ts"
+    "./controller.ts"
+  ],
+  "include": [
+    "./shared"
   ]
 }
