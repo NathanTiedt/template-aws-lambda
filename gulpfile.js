@@ -1,4 +1,4 @@
-const { src, dest, series } = require('gulp');
+const { src, dest, series, parallel } = require('gulp');
 const { join, resolve } = require('path');
 const clean = require('gulp-clean');
 const fs = require('fs');
@@ -44,16 +44,21 @@ function findLambdas() {
     });
 }
 
-function installNodeDev() {
-  src(`./package.json`)
+function installMainNodeDev() {
+  return src(`./package.json`)
     .pipe(install());
-  return Promise.all(
-    findLambdas()
-      .map( (lambda) => {
+}
+
+function installNodeDev() {
+  let merge = mergeStream();
+  findLambdas()
+    .map( (lambda) => {
+      merge.add(
         src(`./${lambda}/package.json`)
           .pipe(install())
-      })
-  )
+      )
+    });
+  return merge;
 }
 
 function installNodeProduction() {
@@ -82,21 +87,18 @@ function startLambdaFunction() {
 
 function typescriptFunction(lambda) {
   const tsProject = ts.createProject(`./${lambda}/tsconfig.json`);
-  return Promise.resolve(
-    tsProject.src()
+  return tsProject.src()
       .pipe(tsProject())
       .pipe(dest(`${BUILD_DIR}/${lambda}`))
-  );
 }
 
 function typescriptLambdas(done) {
-  let lambdas = Promise.all(
-    findLambdas()
-      .map( (lambda) => {
-        return typescriptFunction(lambda);
-      })
-  );
-  return lambdas;
+  let merge = mergeStream();
+  findLambdas()
+    .map( (lambda) => {
+      merge.add(typescriptFunction(lambda));
+    })
+  return merge;
 }
 
 function zipLambdas() {
@@ -113,7 +115,10 @@ function zipLambdas() {
 }
 
 exports.create = startLambdaFunction;
-exports.install = installNodeDev;
+exports.install = parallel(
+  installMainNodeDev, 
+  installNodeDev
+);
 exports.package = series(
   cleanBuild, 
   typescriptLambdas, 
