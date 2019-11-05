@@ -1,6 +1,6 @@
 
-import Control from './controller';
+import Handler from './handler';
 
-const control: Control = new Control();
+const control: Handler = new Handler();
 
 export const handler: any = control.handleEvent;
