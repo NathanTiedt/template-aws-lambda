@@ -1,6 +1,6 @@
 
 import Handler from './handler';
 
-const control: Handler = new Handler();
+const lambda: Handler = new Handler();
 
-export const handler: any = control.handleEvent;
+export const handler: any = lambda.handleEvent;

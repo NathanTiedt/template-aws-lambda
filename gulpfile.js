@@ -67,7 +67,7 @@ function installNodeProduction() {
     .map( (lambda) => {
         merge.add(src(`./${lambda}/package.json`)
           .pipe(dest(`${BUILD_DIR}/${lambda}`))
-          .pipe(install({npm: `--production --save false`})))
+          .pipe(install({npm: `--production --no-shrinkwrap --save false`})))
     })
   return merge;
 }
