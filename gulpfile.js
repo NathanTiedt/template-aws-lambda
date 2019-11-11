@@ -6,6 +6,7 @@ const install = require('gulp-install');
 const mergeStream = require('merge-stream');
 const program = require('commander');
 const replace = require('gulp-replace');
+const run = require('gulp-run');
 const ts = require('gulp-typescript');
 const zip = require('gulp-zip');
 
@@ -85,11 +86,17 @@ function startLambdaFunction() {
     .pipe(dest(`./${program.name}/`));
 }
 
+/*
 function typescriptFunction(lambda) {
   const tsProject = ts.createProject(`./${lambda}/tsconfig.json`);
   return tsProject.src()
       .pipe(tsProject())
       .pipe(dest(`${BUILD_DIR}/${lambda}`))
+}
+*/
+
+function typescriptFunction(lambda) {
+  return run(`cd ./${lambda}/ && tsc`).exec();
 }
 
 function typescriptLambdas(done) {

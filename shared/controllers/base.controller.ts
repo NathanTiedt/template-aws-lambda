@@ -9,6 +9,6 @@ export default abstract class BaseController {
     log.trace(`Starting Controller`);
   }
 
-  public abstract handleEvent(event: any, context: Context);
+  public abstract handleEvent(event: any, context: Context): any;
 
 }
