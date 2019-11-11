@@ -5,15 +5,9 @@
     "lib": ["es2017"],
     "moduleResolution": "node",
     "allowJs": false,
-    "noEmit": true,
     "strict": true,
     "isolatedModules": true,
     "esModuleInterop": true
   }, 
-  "include": [
-    "./index.ts",
-    "./handler.ts",
-    "./controller.ts",
-    "../shared/**/*"
-  ]
+  "files": [ "index.ts" ]
 }

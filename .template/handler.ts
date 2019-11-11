@@ -8,5 +8,9 @@ export default class Handler {
   constructor(control?: Control) {
     this.control = control || new Control();
   }
+
+  public handleEvent() {
+
+  }
 }
 
