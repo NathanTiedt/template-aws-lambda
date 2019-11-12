@@ -89,7 +89,7 @@ function startLambdaFunction() {
 /*
 function typescriptFunction(lambda) {
   const tsProject = ts.createProject(`./${lambda}/tsconfig.json`);
-  return tsProject.src()
+  return src([`./${lambda}/**\/*.ts`, `./shared/**\/*.ts`], {base: `./${lambda}/`})
       .pipe(tsProject())
       .pipe(dest(`${BUILD_DIR}/${lambda}`))
 }
@@ -121,6 +121,7 @@ function zipLambdas() {
   return merge;
 }
 
+exports.clean = cleanBuild;
 exports.create = startLambdaFunction;
 exports.install = parallel(
   installMainNodeDev, 
