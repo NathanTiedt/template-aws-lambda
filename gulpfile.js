@@ -14,6 +14,10 @@ const ARTIFACTS = `./artifacts`;
 const BUILD_DIR = `./build`;
 const NO_NAME = 'NONE';
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc cleans the build directory and the artifacts directory
+ */
 function cleanBuild() {
   return mergeStream(
     src(`${BUILD_DIR}/*`, {read: false})
@@ -23,6 +27,11 @@ function cleanBuild() {
   );
 }
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc removes the package files from the build directory
+ *        keeps zips as tiny as possible
+ */
 function cleanPackageJsons() {
   let merge = mergeStream();
   findLambdas()
@@ -37,6 +46,10 @@ function cleanPackageJsons() {
   return merge;
 }
 
+/**
+ *  @return {string[]} - array of directory names of lambdas
+ *  @desc loops through the directories to find any that contain a package.json
+ */
 function findLambdas() {
   return fs.readdirSync('./')
     .filter( (dir) => {
@@ -45,11 +58,19 @@ function findLambdas() {
     });
 }
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc installs the main set of node modules in the root package.json
+ */
 function installMainNodeDev() {
   return src(`./package.json`)
     .pipe(install());
 }
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc installs the node modules for each lambda
+ */
 function installNodeDev() {
   let merge = mergeStream();
   findLambdas()
@@ -62,6 +83,10 @@ function installNodeDev() {
   return merge;
 }
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc installs the production node module for each lambda
+ */
 function installNodeProduction() {
   let merge = mergeStream();
   findLambdas()
@@ -73,6 +98,10 @@ function installNodeProduction() {
   return merge;
 }
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc creates a lambda from the template directory
+ */
 function startLambdaFunction() {
   program
     .option('-n, --name <lambda-name>', 'Name of Lambda Function', NO_NAME)
@@ -86,7 +115,7 @@ function startLambdaFunction() {
     .pipe(dest(`./${program.name}/`));
 }
 
-/*
+/* Doesn't return a reduced set of files, only all the shared files
 function typescriptFunction(lambda) {
   const tsProject = ts.createProject(`./${lambda}/tsconfig.json`);
   return src([`./${lambda}/**\/*.ts`, `./shared/**\/*.ts`], {base: `./${lambda}/`})
@@ -95,10 +124,19 @@ function typescriptFunction(lambda) {
 }
 */
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc uses the tsconfig in the lambda directory to transpile the code
+ */
 function typescriptFunction(lambda) {
   return run(`cd ./${lambda}/ && tsc`).exec();
 }
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc transpiles each lambda into build directory
+ *
+ */
 function typescriptLambdas(done) {
   let merge = mergeStream();
   findLambdas()
@@ -108,6 +146,11 @@ function typescriptLambdas(done) {
   return merge;
 }
 
+/**
+ *  @return {stream} - gulp stream
+ *  @desc zips all of the lambdas in the build directory
+ *        puts them into the artifact directory
+ */
 function zipLambdas() {
   let merge = mergeStream();
   findLambdas()
@@ -121,12 +164,37 @@ function zipLambdas() {
   return merge;
 }
 
+/**
+ *  @example 
+ *    // empties ./build and ./artifacts
+ *    gulp clean
+ *  @desc cleans the build and artifacts directory
+ */
 exports.clean = cleanBuild;
+
+/**
+ *  @example
+ *    // create a lambda directory named new
+ *    gulp create --name new
+ *  @desc copies the template directory for a new lambda
+ */
 exports.create = startLambdaFunction;
+
+/**
+ *  @example
+ *    gulp install
+ *  @desc installs root node modules and each lambda's modules
+ */
 exports.install = parallel(
   installMainNodeDev, 
   installNodeDev
 );
+
+/**
+ *  @example
+ *    gulp package
+ *  @desc for each lambda, transpiles, installs modules, zips
+ */
 exports.package = series(
   cleanBuild, 
   typescriptLambdas, 
