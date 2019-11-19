@@ -1,0 +1,3 @@
+[submodule "lambda-shared"]
+	path = lambda-shared
+	url = git@github.com:NathanTiedt/lambda-shared.git

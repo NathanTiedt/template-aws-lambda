@@ -55,6 +55,7 @@ function findLambdas() {
   return fs.readdirSync('./')
     .filter( (dir) => {
       return dir !== '.template'
+          && dir !== 'lambda-shared'
           && fs.existsSync(join(dir, 'package.json'));
     });
 }
