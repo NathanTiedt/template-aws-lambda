@@ -2,6 +2,7 @@ const { src, dest, series, parallel, task } = require('gulp');
 const { join, resolve } = require('path');
 const clean = require('gulp-clean');
 const fs = require('fs');
+const git = require('gulp-git');
 const install = require('gulp-install');
 const mergeStream = require('merge-stream');
 const program = require('commander');
@@ -56,6 +57,10 @@ function findLambdas() {
       return dir !== '.template'
           && fs.existsSync(join(dir, 'package.json'));
     });
+}
+
+function subModuleUpdate() {
+  return git.updateSubmodule({ args: '--init' });
 }
 
 /**
@@ -187,7 +192,8 @@ exports.create = startLambdaFunction;
  */
 exports.install = parallel(
   installMainNodeDev, 
-  installNodeDev
+  installNodeDev,
+  subModuleUpdate
 );
 
 /**
