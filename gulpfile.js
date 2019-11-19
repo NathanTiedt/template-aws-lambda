@@ -48,6 +48,23 @@ function cleanPackageJsons() {
 }
 
 /**
+ *  @return {stream} - gulp stream
+ *  @desc clones this template repo with a new name
+ */
+function cloneProject() {
+  program
+    .option('-n, --name <repo-name>', 'Name of Lambda Function', NO_NAME)
+    .option('-d, --desc <description>', 'Description of Lambda', '');
+  program.parse(process.argv);
+  if (program.name === 'NONE')
+    throw new Error('No Name Given');
+  if (fs.existsSync(`../${program.name}/`))
+    throw new Error(`Project already exists!`);
+  return src('./**/*', {dot: true})
+    .pipe(dest(`../${program.name}/`));
+}
+
+/**
  *  @return {string[]} - array of directory names of lambdas
  *  @desc loops through the directories to find any that contain a package.json
  */
@@ -60,9 +77,6 @@ function findLambdas() {
     });
 }
 
-function subModuleUpdate() {
-  return git.updateSubmodule({ args: '--init' });
-}
 
 /**
  *  @return {stream} - gulp stream
@@ -104,6 +118,13 @@ function installNodeProduction() {
   return merge;
 }
 
+function removeRemote() {
+  return git.removeRemote(
+    'origin', 
+    {cwd: `../${program.name}/`}, 
+    (err) => { if (err) throw err});
+}
+
 /**
  *  @return {stream} - gulp stream
  *  @desc creates a lambda from the template directory
@@ -115,10 +136,20 @@ function startLambdaFunction() {
   program.parse(process.argv);
   if (program.name === 'NONE')
     throw new Error('No Name Given');
+  if (fs.existsSync(`./${program.name}`))
+    throw new Error(`Lambda Already Exists!`);
   return src('./.template/*')
     .pipe(replace('lambda_function_name', program.name))
     .pipe(replace('lambda_function_description', program.desc))
     .pipe(dest(`./${program.name}/`));
+}
+
+/**
+ *  @returns {stream} - gulp stream
+ *  @desc updates the git submodules
+ */
+function subModuleUpdate() {
+  return git.updateSubmodule({ args: '--init' });
 }
 
 /* Doesn't return a reduced set of files, only all the shared files
@@ -177,6 +208,13 @@ function zipLambdas() {
  *  @desc cleans the build and artifacts directory
  */
 exports.clean = cleanBuild;
+
+task('clone', 
+  series(
+    cloneProject,
+    removeRemote
+  )
+);
 
 /**
  *  @example
