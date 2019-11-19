@@ -1,4 +1,4 @@
-const { src, dest, series, parallel } = require('gulp');
+const { src, dest, series, parallel, task } = require('gulp');
 const { join, resolve } = require('path');
 const clean = require('gulp-clean');
 const fs = require('fs');
@@ -62,7 +62,7 @@ function findLambdas() {
  *  @return {stream} - gulp stream
  *  @desc installs the main set of node modules in the root package.json
  */
-function installMainNodeDev() {
+async function installMainNodeDev() {
   return src(`./package.json`)
     .pipe(install());
 }
@@ -71,7 +71,7 @@ function installMainNodeDev() {
  *  @return {stream} - gulp stream
  *  @desc installs the node modules for each lambda
  */
-function installNodeDev() {
+async function installNodeDev() {
   let merge = mergeStream();
   findLambdas()
     .map( (lambda) => {
